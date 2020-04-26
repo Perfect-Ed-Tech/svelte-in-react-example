@@ -1,68 +1,115 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Svelte component in React example
 
-## Available Scripts
+## Getting started
 
-In the project directory, you can run:
+```bash
+# install node modules
+yarn install
 
-### `yarn start`
+# start dev server
+yarn start
+```
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## How to set it up in already existing create-react-app project
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+### 1. Setup `react-app-rewired` and add `svelte-loader` to wepack
 
-### `yarn test`
+```bash
+# install react-app-rewired
+yarn add react-app-rewired --dev
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# create config-overrides.js file
+touch config-overrides.js
+```
 
-### `yarn build`
+update package.json scripts to use `react-app-rewired` instead of `react-scripts`
+```json
+{
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject"
+}
+```
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+add webpack config for svelte-loader to `config-overrides.js` file
+```javascript
+const path = require('path')
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+module.exports = function override(config, env) {
+  config.resolve.alias.svelte = path.resolve('node_modules', 'svelte');
+  config.resolve.extensions.push('.svelte');
+  config.resolve.mainFields = ['svelte', 'browser', 'module', 'main'];
+  
+  config.module.rules = config.module.rules.map(rule => {
+    if (rule.oneOf instanceof Array) {
+      return {
+        ...rule,
+        oneOf: [
+          {
+            test: /\.svelte$/,
+            use: {
+              loader: 'svelte-loader'
+            }
+          },
+          ...rule.oneOf
+        ]
+      };
+    }
+    return rule;
+  })
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  return config;
+}
+```
 
-### `yarn eject`
+### 2. Install `svelte-adapter` and start using Svelte components in React :)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+install `svelte-adapter`
+```bash
+yarn add svelte-adapter
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+write a sample Svelte component
+```svelte
+<script>
+  import { createEventDispatcher } from 'svelte';
+  export let name;
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+  const dispatch = createEventDispatcher();
+  function sayHello() {
+    dispatch('message', {
+      text: 'Hello from Svelte!'
+    });
+  }
+</script>
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+<p>Hello {name} from Svelte</p>
+<button on:click={sayHello}>Click me!</button>
 
-## Learn More
+<style>
+  p {
+    color: orange;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+</style>
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+use it like this in React
+```javascript
+import React from 'react';
+import toReact from 'svelte-adapter/react';
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+import HelloComponent from './Hello.svelte';
+const Hello = toReact(HelloComponent, {}, 'div');
 
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+function ReactComponent = () => {
+  return (
+    <div>
+      <h1>React Component</h1>
+      <Hello name="World" onMessage={(event) => alert(event.detail.text)} />
+    </div>
+  )
+}
+```
