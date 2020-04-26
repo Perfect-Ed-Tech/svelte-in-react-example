@@ -9532,6 +9532,11 @@ supports-color@^7.0.0, supports-color@^7.1.0:
   dependencies:
     has-flag "^4.0.0"
 
+svelte-adapter@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/svelte-adapter/-/svelte-adapter-0.3.0.tgz#471a3b726dd53fa1b067ba344eb4277f67ccdd05"
+  integrity sha512-U927tKNaJnZsN+SS1ZWdBBYnu1cx3mvD3YO8bf8RL4VQrBhCTyvdEVG3npnkt/QZ7ir0aA3NiDgwtckVs1INdw==
+
 svelte-dev-helper@^1.1.9:
   version "1.1.9"
   resolved "https://registry.yarnpkg.com/svelte-dev-helper/-/svelte-dev-helper-1.1.9.tgz#7d187db5c6cdbbd64d75a32f91b8998bde3273c3"

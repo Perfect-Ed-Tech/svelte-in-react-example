@@ -1,9 +1,18 @@
 import React from 'react';
+import toReact from 'svelte-adapter/react';
 import './App.css';
 
 import logo from './logo.svg';
 
+import HelloComponent from './Hello.svelte';
+const Hello = toReact(HelloComponent, {}, 'div');
+
 function App() {
+  const handleMessageFromSvelte = event => {
+    console.log('React received message from Svelte', event);
+    alert(`Message from Svelte -> "${event.detail.text}"`);
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -19,6 +28,7 @@ function App() {
         >
           Learn React
         </a>
+        <Hello color="red" name="World" onMessage={handleMessageFromSvelte} />
       </header>
     </div>
   );
