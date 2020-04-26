@@ -12,7 +12,7 @@ yarn start
 
 ## How to set it up in already existing create-react-app project
 
-### 1. Setup `react-app-rewired` and add `svelte-loader` to wenpack
+### 1. Setup `react-app-rewired` and add `svelte-loader` to webpack
 
 ```bash
 # install react-app-rewired
